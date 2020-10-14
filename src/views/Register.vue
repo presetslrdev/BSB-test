@@ -101,7 +101,9 @@
       </div>
       <div class="uk-margin">
         <button type="submit"
-                class="uk-button uk-button-default">
+                class="uk-button uk-button-default"
+                :disabled="disabledBtn"
+        >
           Зарегистрироваться
         </button>
       </div>
@@ -111,7 +113,9 @@
 </template>
 
 <script>
-    import {required, minLength} from 'vuelidate/lib/validators'
+    import {required, minLength, helpers} from 'vuelidate/lib/validators'
+
+    const alphaEmail = helpers.regex('alpha', /^[^@\s]+@[^@\s]+\.[^@\s]+$/)
 
     export default {
         name: "register",
@@ -126,10 +130,17 @@
                 apartment: '',
             }
         }),
+        computed: {
+            disabledBtn() {
+                return this.$v.formReg.name.$invalid ||
+                    this.$v.formReg.phone.$invalid ||
+                    this.$v.formReg.email.$invalid
+            }
+        },
         methods: {
             registerUser(e) {
                 console.log(e)
-            }
+            },
         },
         validations: {
             formReg: {
@@ -142,7 +153,8 @@
                 },
                 email: {
                     required,
-                    minLength: minLength(5)
+                    minLength: minLength(5),
+                    alpha: alphaEmail
                 }
             }
         }
