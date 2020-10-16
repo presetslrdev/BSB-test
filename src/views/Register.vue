@@ -8,7 +8,7 @@
 
       <div class="uk-margin">
         <label class="uk-form-label"
-               for="form-stacked-name">ФИО</label>
+               for="form-stacked-name">ФИО <span class="required"><sup>*</sup></span></label>
         <div class="uk-form-controls">
           <input v-model="formReg.name"
                  class="uk-input"
@@ -22,7 +22,7 @@
 
       <div class="uk-margin">
         <label class="uk-form-label"
-               for="form-stacked-phone">Номер телефона</label>
+               for="form-stacked-phone">Номер телефона <span class="required"><sup>*</sup></span></label>
         <div class="uk-form-controls">
           <input v-model="formReg.phone"
                  class="uk-input"
@@ -36,7 +36,7 @@
 
       <div class="uk-margin">
         <label class="uk-form-label"
-               for="form-stacked-email">Email</label>
+               for="form-stacked-email">Email <span class="required"><sup>*</sup></span></label>
         <div class="uk-form-controls">
           <input v-model="formReg.email"
                  class="uk-input"
@@ -102,6 +102,7 @@
       <div class="uk-margin">
         <button type="submit"
                 class="uk-button uk-button-default"
+                onclick="UIkit.notification({message: 'Пользователь зарегистрирован'})"
                 :disabled="disabledBtn"
         >
           Зарегистрироваться
@@ -116,11 +117,13 @@
     import {required, minLength, helpers} from 'vuelidate/lib/validators'
 
     const alphaEmail = helpers.regex('alpha', /^[^@\s]+@[^@\s]+\.[^@\s]+$/)
+    const alphaPhone = helpers.regex('alpha', /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/)
 
     export default {
         name: "register",
         data: () => ({
             formReg: {
+                id: '',
                 name: '',
                 phone: '',
                 email: '',
@@ -138,8 +141,23 @@
             }
         },
         methods: {
-            registerUser(e) {
-                console.log(e)
+            registerUser() {
+                this.formReg.id = Date.now();
+                const user = JSON.parse(localStorage.getItem('users'));
+                if (user && !user.some(el => el.email == this.formReg.email))
+                    user.push(this.formReg)
+                const parsed = user ? user : [this.formReg];
+                localStorage.setItem('users', JSON.stringify(parsed));
+                this.formReg = {
+                    id: '',
+                    name: '',
+                    phone: '',
+                    email: '',
+                    country: '',
+                    city: '',
+                    street: '',
+                    apartment: '',
+                };
             },
         },
         validations: {
@@ -149,7 +167,8 @@
                 },
                 phone: {
                     required,
-                    minLength: minLength(4)
+                    minLength: minLength(4),
+                    alpha: alphaPhone
                 },
                 email: {
                     required,
@@ -162,5 +181,7 @@
 </script>
 
 <style scoped>
-
+.required{
+  color: red;
+}
 </style>
