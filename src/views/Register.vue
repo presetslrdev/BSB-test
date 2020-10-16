@@ -144,8 +144,8 @@
             registerUser() {
                 this.formReg.id = Date.now();
                 const user = JSON.parse(localStorage.getItem('users'));
-                if (user && !user.some(el => el.email == this.formReg.email))
-                    user.push(this.formReg)
+                // if (user && !user.some(el => el.email == this.formReg.email))
+                user.push(this.formReg)
                 const parsed = user ? user : [this.formReg];
                 localStorage.setItem('users', JSON.stringify(parsed));
                 this.formReg = {
@@ -181,7 +181,7 @@
 </script>
 
 <style scoped>
-.required{
-  color: red;
-}
+  .required {
+    color: red;
+  }
 </style>
